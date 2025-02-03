@@ -28,7 +28,7 @@ class AccountAngel(Account):
 
     def send_close_limit_message(self, selection):
         print(f"Polite reminder: You have spent more than {format(self.notification_percent, '.2%')} "
-              f"of your {self._budget.get_budget_name(selection)} budget. Keep up the good work!")
+              f"of your {self._budgets.get_budget_name(selection)} budget. Keep up the good work!")
 
 class AccountTroublemaker(Account):
 
@@ -58,7 +58,7 @@ class AccountTroublemaker(Account):
 
     def send_close_limit_message(self, selection):
         print(f"Hey, just a heads up: You've exceeded "
-              f"{format(self.notification_percent, '.2%')} of your {self._budget.get_budget_name(selection)} budget. "
+              f"{format(self.notification_percent, '.2%')} of your {self._budgets.get_budget_name(selection)} budget. "
               f"Please be mindful of your spending.")
 
 
@@ -90,4 +90,4 @@ class AccountRebel(Account):
 
     def send_close_limit_message(self, selection):
         print(f"Warning: You've spent over {format(self.notification_percent, '.2%')} "
-              f"of your {self._budget.get_budget_name(selection)} budget. Please be careful with your choices.")
+              f"of your {self._budgets.get_budget_name(selection)} budget. Please be careful with your choices.")

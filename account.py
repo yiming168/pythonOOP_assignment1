@@ -12,7 +12,7 @@ class Account(ABC):
                 *budgets_usd):
         self._user          = User(user_name, age)
         self._bank          = Bank(bank_name, account_num, balance)
-        self._budget        = self.__validate_budgets(Budget(*budgets_usd), self._bank)
+        self._budgets       = self.__validate_budgets(Budget(*budgets_usd), self._bank)
         self._transactions  = []
         self._locked_status = False
 
@@ -82,6 +82,8 @@ class Account(ABC):
         self.__update_account(budget_category, dollar_amount)
         self._transactions.append(Transaction(dollar_amount, budget_category, shop_website))
         self.handle_notification(budget_category)
+        if self._budgets.get_locked_categories_num():
+            self._locked_status = True
 
     def view_budgets(self):
         print(self.get_budget().get_budget_detail())
@@ -99,7 +101,7 @@ class Account(ABC):
         return self._transactions
 
     def get_budget(self):
-        return self._budget
+        return self._budgets
 
     def get_transaction(self):
         return self._transactions
@@ -110,16 +112,16 @@ class Account(ABC):
     def __validate_category(self):
         """Ensure the budget category index is valid."""
         Budget.display_budget_choices()
-        budget_category = input(f"Enter budget category index between 1 and {len(self._budget.BUDGET_TYPE)}.")
+        budget_category = input(f"Enter budget category index between 1 and {len(self._budgets.BUDGET_TYPE)}.")
         while True:
             try:
                 index = int(budget_category) - 1
-                if 0 <= index < len(Budget.BUDGET_TYPE) and not self._budget.get_locked_status(index):
+                if 0 <= index < len(Budget.BUDGET_TYPE) and not self._budgets.get_locked_status(index):
                     return index
-                elif self._budget.get_locked_status(index):
-                    print(f"Locked category. Enter another number between 1 and {len(self._budget.BUDGET_TYPE)}.")
+                elif self._budgets.get_locked_status(index):
+                    print(f"Locked category. Enter another number between 1 and {len(self._budgets.BUDGET_TYPE)}.")
                 else:
-                    print(f"Invalid selection. Enter a number between 1 and {len(self._budget.BUDGET_TYPE)}.")
+                    print(f"Invalid selection. Enter a number between 1 and {len(self._budgets.BUDGET_TYPE)}.")
             except ValueError:
                 print("Invalid input. Please enter a valid integer.")
             budget_category = input("Re-enter budget category index: ")
@@ -148,16 +150,16 @@ class Account(ABC):
             shop_website = input("Re-enter shop name or website: ")
 
     def __update_account(self, category, amount):
-        self._budget.set_spent(category, amount)
-        if self._budget.get_spent(category) > self._budget.get_limit(category) * self.locked_out_percent:
-            self._budget.set_budget_status(category, True)
+        self._budgets.set_spent(category, amount)
+        if self._budgets.get_spent(category) > self._budgets.get_limit(category) * self.locked_out_percent:
+            self._budgets.set_budget_status(category, True)
         self._bank.deduct_balance(amount)
 
     def handle_notification(self,index):
-        if self._budget.get_spent(index) > self._budget.get_limit(index) * self.notification_percent:
+        if self._budgets.get_spent(index) > self._budgets.get_limit(index) * self.notification_percent:
             self.send_close_limit_message(index)
-        if self._budget.get_spent(index) > self._budget.get_limit(index) * self.locked_out_percent:
-            self._budget.set_budget_status(index, True)
+        if self._budgets.get_spent(index) > self._budgets.get_limit(index) * self.locked_out_percent:
+            self._budgets.set_budget_status(index, True)
             print("Current category has reached its limit, locked.")
 
 
