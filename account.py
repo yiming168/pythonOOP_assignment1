@@ -1,11 +1,48 @@
-
+from account_types import AccountAngel, AccountTroublemaker, AccountRebel
 from user import User
 from budget import Budget
 from transaction import Transaction
 from bank import Bank
 from abc import ABC, abstractmethod
 
+def load_test_users():
+    # Create Angel user account with transactions
+    angel_1_account = AccountAngel(user_name="Mickey", age=8,
+                                   bank_name="Scotia", account_num="A123456", balance=2000,
+                                   budgets_usd=[400, 600, 300, 200])
+    angel_1_account.transactions.append(Transaction(50, 0, "Blizzard"))
+    angel_1_account.transactions.append(Transaction(100, 1, "Zara"))
+    angel_1_account.transactions.append(Transaction(100, 2, "Happy Lamb"))
+    angel_1_account.transactions.append(Transaction(20, 3, "Dollar Store"))
+    angel_1_account.transactions.append(Transaction(30, 0, "Steam"))
+    angel_1_account.transactions.append(Transaction(100, 3, "Walmart"))
+
+    # Create TroubleMaker user account with transactions
+    troublemaker_1_account = AccountTroublemaker(user_name="Garfield", age=10,
+                                                 bank_name="BMO", account_num="B123456", balance=1000,
+                                                 budgets_usd=[200, 300, 300, 200])
+    troublemaker_1_account.transactions.append(Transaction(30, 0, "Steam"))
+    troublemaker_1_account.transactions.append(Transaction(1, 12, "Forever 21"))
+    troublemaker_1_account.transactions.append(Transaction(80, 2, "Mcdonald"))
+    troublemaker_1_account.transactions.append(Transaction(30, 3, "Shoppers"))
+    troublemaker_1_account.transactions.append(Transaction(50, 1, "Zara"))
+
+    # Create Rebel user account with transactions
+    rebel_1_account = AccountRebel(user_name="Snoopy", age=12,
+                                   bank_name="TD", account_num="C123456", balance=800,
+                                   budgets_usd=[150, 250, 250, 150])
+    rebel_1_account.transactions.append(Transaction(50, 0, "Skating"))
+    rebel_1_account.transactions.append(Transaction(50, 1, "Sushi Plus"))
+    rebel_1_account.transactions.append(Transaction(50, 2, "Adidas"))
+    rebel_1_account.transactions.append(Transaction(50, 3, "Canadian Tire"))
+    rebel_1_account.transactions.append(Transaction(50, 1, "Boston Pizza"))
+
+    # Add all accounts to the account list
+    Account.account_list.extend([angel_1_account, troublemaker_1_account, rebel_1_account])
+
 class Account(ABC):
+    # Class variable to hold the list of all account instances
+    account_list = []
 
     def __init__(self, user_name, age,
                 bank_name, account_num, balance,
@@ -15,6 +52,9 @@ class Account(ABC):
         self._budgets       = self.__validate_budgets(Budget(*budgets_usd), self._bank)
         self._transactions  = []
         self._locked_status = False
+
+        # Add this account to the backend class-level account list
+        Account.account_list.append(self)
 
     @staticmethod
     def __validate_budgets(origin_budgets: Budget, bank: Bank) -> Budget:
@@ -74,6 +114,11 @@ class Account(ABC):
     @abstractmethod
     def send_close_limit_message(self, selection):
         pass
+
+    @property
+    def transactions(self):
+        return self._transactions
+
 
     def record_transaction(self):
         budget_category = self.__validate_category()
@@ -161,6 +206,7 @@ class Account(ABC):
         if self._budgets.get_spent(index) > self._budgets.get_limit(index) * self.locked_out_percent:
             self._budgets.set_budget_status(index, True)
             print("Current category has reached its limit, locked.")
+
 
 
 

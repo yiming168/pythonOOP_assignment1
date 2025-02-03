@@ -5,7 +5,7 @@ class Transaction:
     def __init__(self, dollar_amount, budget_category, shop_website):
         self._dollar_amount     = self.__validate_dollar_amount(dollar_amount)
         self._budget_category   = self.__validate_budget_category(budget_category)
-        self._shop_website = self.__validate_shop_website(shop_website)
+        self._shop_website      = self.__validate_shop_website(shop_website)
         self._timestamp         = datetime.now()
 
     @staticmethod

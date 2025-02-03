@@ -91,3 +91,4 @@ class AccountRebel(Account):
     def send_close_limit_message(self, selection):
         print(f"Warning: You've spent over {format(self.notification_percent, '.2%')} "
               f"of your {self._budgets.get_budget_name(selection)} budget. Please be careful with your choices.")
+

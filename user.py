@@ -1,7 +1,7 @@
 class User:
     def __init__(self, name, age):
         self._name = self.__validate_name(name)
-        self._age = self.__validate_age(age)
+        self._age  = self.__validate_age(age)
 
     @staticmethod
     def __validate_name(name):
