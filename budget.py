@@ -11,10 +11,13 @@ class Budget:
     LIMIT, SPENT, STATUS = 0, 1, 2
     NUM_STAR = 50
 
-    def __init__(self):
+    def __init__(self, *budgets_usd):
         self._budget_list =[]
         for i in range(len(Budget.BUDGET_TYPE)):
-            self._budget_list.append([0, 0, False])
+            if i < len(budgets_usd):
+                self._budget_list.append([budgets_usd[i], 0, False])
+            else:
+                self._budget_list.append([0, 0, False])
 
     @classmethod
     def _validate_index(cls,index):

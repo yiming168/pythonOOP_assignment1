@@ -1,7 +1,7 @@
 class Bank:
-    def __init__(self, bank_account_number, bank_name, bank_balance):
-        self._bank_account_number = self.__validate_account_number(bank_account_number)
+    def __init__(self, bank_name, bank_account_number, bank_balance):
         self._bank_name           = self.__validate_bank_name(bank_name)
+        self._bank_account_number = self.__validate_account_number(bank_account_number)
         self._bank_balance        = self.__validate_balance(bank_balance)
 
     @staticmethod
