@@ -7,8 +7,8 @@ class AccountAngel(Account):
     LOCKED_OUT_PERCENT = 1000000000
     LOCKED_OUT_CATEGORY_NUM = 100000000
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, user_name, age, bank_name, account_num, balance, *budgets_usd):
+        super().__init__(user_name, age, bank_name, account_num, balance, *budgets_usd)
 
     @property
     def user_type(self):
@@ -37,8 +37,8 @@ class AccountTroublemaker(Account):
     LOCKED_OUT_PERCENT = 1.2
     LOCKED_OUT_CATEGORY_NUM = 100000000
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, user_name, age, bank_name, account_num, balance, *budgets_usd):
+        super().__init__(user_name, age, bank_name, account_num, balance, *budgets_usd)
 
     @property
     def user_type(self):
@@ -69,8 +69,8 @@ class AccountRebel(Account):
     LOCKED_OUT_PERCENT = 1.0
     LOCKED_OUT_CATEGORY_NUM = 2
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, user_name, age, bank_name, account_num, balance, *budgets_usd):
+        super().__init__(user_name, age, bank_name, account_num, balance, *budgets_usd)
 
     @property
     def user_type(self):

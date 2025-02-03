@@ -1,8 +1,5 @@
 from typing import List
 from account import Account
-from account_types import AccountAngel, AccountTroublemaker, AccountRebel
-from transaction import Transaction
-
 
 class FamMenu:
 
