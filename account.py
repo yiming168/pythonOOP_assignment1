@@ -1,4 +1,3 @@
-from typing import List
 
 from user import User
 from budget import Budget
@@ -22,7 +21,7 @@ class Account(ABC):
         """Ensure budgets are non-negative and do not exceed the bank balance."""
 
         while True:
-            total_budget = origin_budgets.get_total_budget_remaining()
+            total_budget = origin_budgets.get_total_remaining()
 
             # Check for negative budgets
             if any(b[Budget.LIMIT] < 0 for b in origin_budgets.get_budget_list()):
@@ -81,32 +80,12 @@ class Account(ABC):
         pass
 
     def record_transaction(self):
-        budget_category_selection = self.get_valid_budget_category_selection() - 1
-        if self.get_budget().get_budget_locked_status(budget_category_selection):
-            print(f"\nThis budget category is currently locked out. Cannot record transaction.")
-            input("Press Enter to continue...\n")
-            return
-
-        transaction_amount = self._get_valid_transaction_amount()
-        if transaction_amount > self.get_bank().get_bank_balance():
-            print(f"\nYou do not have enough money in your bank account to complete this transaction.\n")
-            input("Press Enter to continue...")
-            return
-
-        shop_website_name = Account._get_valid_shop_website_name()
-        transaction = Transaction(transaction_amount, budget_category_selection, shop_website_name)
-
-        self.add_transaction_to_list(transaction)
-        print(f"\nTransaction recorded successfully!")
-        print(f"Transaction details:\n{transaction.get_details()}\n")
-        input("Press Enter to continue...\n")
-
-        budget_spent = self.get_budget().get_budget_spent(budget_category_selection)
-        self._check_if_sent_notification_message(budget_spent, budget_category_selection)
-        self._check_if_budget_locked_and_account_locked(budget_spent, budget_category_selection)
-
-        return
-
+        budget_category = self.__validate_category()
+        dollar_amount = self.__validate_dollar_amount()
+        shop_website = self.__validate_website()
+        self.__update_account(budget_category, dollar_amount)
+        self._transactions.append(Transaction(dollar_amount, budget_category, shop_website))
+        self.handle_notification()
 
     def view_budgets(self):
         print(self.get_budget().get_budget_detail())
@@ -117,6 +96,12 @@ class Account(ABC):
     def get_bank(self):
         return self._bank
 
+    def get_balance(self):
+        return self._bank.balance
+
+    def get_transactions(self):
+        return self._transactions
+
     def get_budget(self):
         return self._budget
 
@@ -125,3 +110,52 @@ class Account(ABC):
 
     def get_locked_status(self):
         return self._locked_status
+
+    def __validate_category(self):
+        """Ensure the budget category index is valid."""
+        Budget.display_budget_choices()
+        budget_category = input(f"Enter budget category index between 1 and {len(self._budget.BUDGET_TYPE)}.")
+        while True:
+            try:
+                index = int(budget_category) - 1
+                if 0 <= index < len(Budget.BUDGET_TYPE) and not self._budget.get_locked_status(index):
+                    return index
+                elif self._budget.get_locked_status(index):
+                    print(f"Locked category. Enter another number between 1 and {len(self._budget.BUDGET_TYPE)}.")
+                else:
+                    print(f"Invalid selection. Enter a number between 1 and {len(self._budget.BUDGET_TYPE)}.")
+            except ValueError:
+                print("Invalid input. Please enter a valid integer.")
+            budget_category = input("Re-enter budget category index: ")
+
+    def __validate_dollar_amount(self):
+        """Ensure the dollar amount is a positive number"""
+        dollar_amount = input("Enter dollar amount: ")
+        while True:
+            try:
+                amount = float(dollar_amount)
+                if 0 < amount <= self._bank.balance:
+                    return amount
+            except ValueError:
+                print("Invalid input. Please enter a valid amount.")
+            dollar_amount = input("Enter dollar amount: ")
+
+    @staticmethod
+    def __validate_website():
+        """Ensure the shop/website name is a non-empty string, or allow cancellation."""
+        shop_website = input("Re-enter shop name or website: ")
+        while True:
+            name = str(shop_website).strip()
+            if name:
+                return name
+            print("Shop/website name cannot be empty.")
+            shop_website = input("Re-enter shop name or website: ")
+
+    def __update_account(self, category, amount):
+        self._budget.set_spent(category, amount)
+        if self._budget.get_spent(category) > self._budget.get_limit(category) * self.locked_out_percent:
+            self._budget.set_budget_status(category, True)
+        self._bank.deduct_balance(amount)
+
+    def handle_notification(self):
+        pass

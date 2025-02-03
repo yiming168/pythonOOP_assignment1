@@ -29,28 +29,35 @@ class Budget:
         cls._validate_index(index)
         return Budget.BUDGET_TYPE[index]
 
+    @staticmethod
+    def display_budget_choices():
+        """Display budget categories and prompt the user to select one."""
+        print("\nAvailable Budget Categories:")
+        for i, category in enumerate(Budget.BUDGET_TYPE):
+            print(f"  {i + 1}: {category}")  # Display index and category name
+
     def get_budget_list(self):
         return self._budget_list
 
-    def get_budget_limit(self, index):
+    def get_limit(self, index):
         self._validate_index(index)
         return self._budget_list[index][Budget.LIMIT]
 
-    def get_budget_spent(self, index):
+    def get_spent(self, index):
         self._validate_index(index)
         return self._budget_list[index][Budget.SPENT]
 
-    def get_budget_locked_status(self, index):
+    def get_locked_status(self, index):
         self._validate_index(index)
         return self._budget_list[index][Budget.STATUS]
 
-    def set_budget_limit(self, index, limit):
+    def set_limit(self, index, limit):
         self._validate_index(index)
         if limit < 0:
             raise ValueError("Budget limit cannot be negative.")
         self._budget_list[index][Budget.LIMIT] = limit
 
-    def set_budget_spent(self, index, spent):
+    def set_spent(self, index, spent):
         self._validate_index(index)
         if spent < 0:
             raise ValueError("Amount spent cannot be negative.")
@@ -60,7 +67,7 @@ class Budget:
         self._validate_index(index)
         self._budget_list[index][Budget.STATUS] = status
 
-    def deduct_budget_spent(self, index, amount):
+    def deduct_spent(self, index, amount):
         self._validate_index(index)
         if amount <= 0:
             raise ValueError("Amount to deduct must be positive.")
@@ -73,11 +80,11 @@ class Budget:
                 result += 1
         return result
 
-    def get_budget_remaining(self,index):
+    def get_remaining(self,index):
         self._validate_index(index)
-        return self.get_budget_limit(index) - self.get_budget_spent(index)
+        return self.get_limit(index) - self.get_spent(index)
 
-    def get_total_budget_remaining(self):
+    def get_total_remaining(self):
         result = 0
         for budget in self._budget_list:
             result += budget[Budget.LIMIT] - budget[Budget.SPENT]
