@@ -82,7 +82,7 @@ class Account(ABC):
         self.__update_account(budget_category, dollar_amount)
         self._transactions.append(Transaction(dollar_amount, budget_category, shop_website))
         self.handle_notification(budget_category)
-        if self._budgets.get_locked_categories_num():
+        if self._budgets.get_locked_categories_num() >= self.locked_out_category_num:
             self._locked_status = True
 
     def view_budgets(self):
