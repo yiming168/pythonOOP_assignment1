@@ -3,31 +3,45 @@ from datetime import datetime
 
 class Transaction:
     def __init__(self, dollar_amount, budget_category, shop_website_name):
-        self._timestamp = datetime.now()
-        self._dollar_amount = self.__validate_dollar_amount(dollar_amount)
-        self._budget_category = self.__validate_budget_category(budget_category)
+        self._dollar_amount     = self.__validate_dollar_amount(dollar_amount)
+        self._budget_category   = self.__validate_budget_category(budget_category)
         self._shop_website_name = self.__validate_shop_website_name(shop_website_name)
+        self._timestamp         = datetime.now()
 
     @staticmethod
     def __validate_dollar_amount(amount):
-        """Validate that the dollar amount is a positive number."""
-        if not isinstance(amount, (int, float)) or amount <= 0:
-            raise ValueError("Dollar amount must be a positive number.")
-        return amount
+        """Prompt the user until they enter a positive number."""
+        while True:
+            if isinstance(amount, (int, float)) or amount > 0:
+                return amount
+            amount = float(input('Invalid dollar amount, please enter a valid dollar amount: '))
 
     @staticmethod
     def __validate_budget_category(category_index):
-        """Validate that the budget category index is within bounds."""
-        if not isinstance(category_index, int) or category_index < 0 or category_index >= len(Budget.BUDGET_TYPE):
-            raise ValueError(f"Invalid budget category index: {category_index}. Must be between 0 and {len(Budget.BUDGET_TYPE) - 1}.")
-        return category_index
+        """Prompt the user until they enter a valid budget category index."""
+        while True:
+            try:
+                category_index = int(category_index)  # Convert input to integer
+                if 0 <= category_index < len(Budget.BUDGET_TYPE):
+                    return category_index
+                else:
+                    print(
+                        f"Invalid category index: {category_index}. Must be between 0 and {len(Budget.BUDGET_TYPE) - 1}.")
+            except ValueError:
+                print("Invalid input. Please enter a valid integer category index.")
+
+            # Prompt user for correct input
+            category_index = input(f"Enter a category index (0-{len(Budget.BUDGET_TYPE) - 1}): ")
 
     @staticmethod
     def __validate_shop_website_name(name):
-        """Validate that the shop/website name is a non-empty string."""
-        if not isinstance(name, str) or not name.strip():
-            raise ValueError("Shop/website name must be a non-empty string.")
-        return name.strip()
+        """Prompt the user until they enter a valid shop/website name."""
+        while True:
+            name = str(name).strip()  # Ensure input is a stripped string
+            if name:
+                return name
+            print("Shop/website name must be a non-empty string.")
+            name = input("Enter a valid shop/website name: ")
 
     def get_timestamp(self):
         return self._timestamp

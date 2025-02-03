@@ -9,12 +9,12 @@ from abc import ABC, abstractmethod
 class Account(ABC):
 
     def __init__(self, user_name, age,
-                 bank_name, account_num, balance,
-                 *budgets_usd):
-        self._user = User(user_name, age)
-        self._bank = Bank(bank_name, account_num, balance)
-        self._budget = self.__validate_budgets(Budget(*budgets_usd), self._bank)
-        self._transactions: List[Transaction] = []
+                bank_name, account_num, balance,
+                *budgets_usd):
+        self._user          = User(user_name, age)
+        self._bank          = Bank(bank_name, account_num, balance)
+        self._budget        = self.__validate_budgets(Budget(*budgets_usd), self._bank)
+        self._transactions  = []
         self._locked_status = False
 
     @staticmethod
@@ -79,6 +79,34 @@ class Account(ABC):
     @abstractmethod
     def send_exceed_limit_message(self, selection):
         pass
+
+    def record_transaction(self):
+        budget_category_selection = self.get_valid_budget_category_selection() - 1
+        if self.get_budget().get_budget_locked_status(budget_category_selection):
+            print(f"\nThis budget category is currently locked out. Cannot record transaction.")
+            input("Press Enter to continue...\n")
+            return
+
+        transaction_amount = self._get_valid_transaction_amount()
+        if transaction_amount > self.get_bank().get_bank_balance():
+            print(f"\nYou do not have enough money in your bank account to complete this transaction.\n")
+            input("Press Enter to continue...")
+            return
+
+        shop_website_name = Account._get_valid_shop_website_name()
+        transaction = Transaction(transaction_amount, budget_category_selection, shop_website_name)
+
+        self.add_transaction_to_list(transaction)
+        print(f"\nTransaction recorded successfully!")
+        print(f"Transaction details:\n{transaction.get_details()}\n")
+        input("Press Enter to continue...\n")
+
+        budget_spent = self.get_budget().get_budget_spent(budget_category_selection)
+        self._check_if_sent_notification_message(budget_spent, budget_category_selection)
+        self._check_if_budget_locked_and_account_locked(budget_spent, budget_category_selection)
+
+        return
+
 
     def view_budgets(self):
         print(self.get_budget().get_budget_detail())
