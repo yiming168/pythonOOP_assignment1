@@ -75,17 +75,13 @@ class Account(ABC):
     def send_close_limit_message(self, selection):
         pass
 
-    @abstractmethod
-    def send_exceed_limit_message(self, selection):
-        pass
-
     def record_transaction(self):
         budget_category = self.__validate_category()
         dollar_amount = self.__validate_dollar_amount()
         shop_website = self.__validate_website()
         self.__update_account(budget_category, dollar_amount)
         self._transactions.append(Transaction(dollar_amount, budget_category, shop_website))
-        self.handle_notification()
+        self.handle_notification(budget_category)
 
     def view_budgets(self):
         print(self.get_budget().get_budget_detail())
@@ -157,5 +153,12 @@ class Account(ABC):
             self._budget.set_budget_status(category, True)
         self._bank.deduct_balance(amount)
 
-    def handle_notification(self):
-        pass
+    def handle_notification(self,index):
+        if self._budget.get_spent(index) > self._budget.get_limit(index) * self.notification_percent:
+            self.send_close_limit_message(index)
+        if self._budget.get_spent(index) > self._budget.get_limit(index) * self.locked_out_percent:
+            self._budget.set_budget_status(index, True)
+            print("Current category has reached its limit, locked.")
+
+
+
