@@ -1,5 +1,5 @@
 from account_types import AccountAngel, AccountTroublemaker, AccountRebel
-from budget import Budget
+from transaction import Transaction
 
 # Mapping user input to subclasses
 USER_TYPE = {
@@ -15,9 +15,6 @@ class FamMenu:
     def __init__(self):
         self._accounts = []
         self._current_login_account = None
-
-    def get_current_login_account(self):
-        return self._current_login_account
 
     def display_fam_menu(self):
         while True:
@@ -97,13 +94,13 @@ class FamMenu:
                 print("Invalid input. Please enter a number.")
 
     def view_account_options(self):
-        if self.get_current_login_account() is None:
+        if self._current_login_account is None:
             print("No account selected. Please login to an account first.\n")
             return
 
         while True:
-            print(f"\nLogged in as {self.get_current_login_account().user_name} "
-                  f"({self.get_current_login_account().user_type})")
+            print(f"\nLogged in as {self._current_login_account.user_name} "
+                  f"({self._current_login_account.user_type})")
             print("Select from one of the options below:")
             print("1. View Budgets")
             print("2. Record a Transaction")
@@ -112,31 +109,78 @@ class FamMenu:
             print("5. Logout")
             account_menu_selection = FamMenu._get_valid_account_menu_selection()
             if account_menu_selection == 1:
-                self.get_current_login_account().view_budgets()
+                self._current_login_account.view_budgets()
 
             elif account_menu_selection == 2:
-                self.get_current_login_account().record_transaction()
-                if self.get_current_login_account().locked_status:
-                    print(f"{self.get_current_login_account().get_user_name()} is LOCKED, "
+                self._current_login_account.record_transaction()
+                if self._current_login_account.locked_status:
+                    print(f"{self._current_login_account.get_user_name()} is LOCKED, "
                           f"you can not log in again until your account is unlocked.")
                     self._current_login_account = None
                     break
 
             elif account_menu_selection == 3:
-                if len(self.get_current_login_account().transactions) == 0:
+                if len(self._current_login_account.transactions) == 0:
                     print("\nNo transactions recorded yet.")
                     input("\nPress Enter to continue...")
                     return
-                budget_category_selection = Budget.get_valid_budget_category_selection()
-                self.get_current_login_account().view_transaction_by_budget(budget_category_selection)
+                budget_category_selection = self.validate_selection()
+                self._current_login_account.view_transaction_by_budget(budget_category_selection)
 
             elif account_menu_selection == 4:
-                print(self.get_current_login_account())
+                print(self._current_login_account.get_detail())
 
             else:
                 print("Logging out... You have successfully logged out. Thank you for using FAM!\n")
                 self._current_login_account = None
                 break
+
+    def validate_selection(self):
+        while True:
+            print("\nSelect a budget category:")
+            for i, budget_category in enumerate(self._current_login_account.get_budget_list()):
+                print(f"{i + 1}. {budget_category}")
+
+            selection = input("Enter your budget category selection: ")
+            try:
+                selection = int(selection)
+                if 1 <= selection <= len(self._current_login_account.get_budget_list()):
+                    return selection
+                else:
+                    print("Invalid selection. Please choose a valid number.")
+            except ValueError:
+                print("Invalid input. Please enter a number.")
+
+    def load_test_users(self):
+        # Create Angel user account with transactions
+        angel_1_account = AccountAngel("Mickey", 25, "Scotia", "A123456", 2000, 400, 600, 300, 200)
+        angel_1_account.transactions.append(Transaction(50, 0, "Blizzard"))
+        angel_1_account.transactions.append(Transaction(100, 1, "Zara"))
+        angel_1_account.transactions.append(Transaction(100, 2, "Happy Lamb"))
+        angel_1_account.transactions.append(Transaction(20, 3, "Dollar Store"))
+        angel_1_account.transactions.append(Transaction(30, 0, "Steam"))
+        angel_1_account.transactions.append(Transaction(100, 3, "Walmart"))
+
+        # Create TroubleMaker user account with transactions
+        troublemaker_1_account = AccountTroublemaker("Garfield", 10, "BMO", "B123456", 1000, 200, 300, 300, 200)
+        troublemaker_1_account.transactions.append(Transaction(30, 0, "Steam"))
+        troublemaker_1_account.transactions.append(Transaction(1, 1, "Forever 21"))
+        troublemaker_1_account.transactions.append(Transaction(80, 2, "Mcdonald"))
+        troublemaker_1_account.transactions.append(Transaction(30, 3, "Shoppers"))
+        troublemaker_1_account.transactions.append(Transaction(50, 1, "Zara"))
+
+        # Create Rebel user account with transactions
+        rebel_1_account = AccountRebel("Snoopy", 12, "TD", "C123456", 800, 150, 250, 250, 150)
+        rebel_1_account.transactions.append(Transaction(50, 0, "Skating"))
+        rebel_1_account.transactions.append(Transaction(50, 1, "Sushi Plus"))
+        rebel_1_account.transactions.append(Transaction(50, 2, "Adidas"))
+        rebel_1_account.transactions.append(Transaction(50, 3, "Canadian Tire"))
+        rebel_1_account.transactions.append(Transaction(50, 1, "Boston Pizza"))
+
+        # Add all accounts to the account list
+        self._accounts.append(angel_1_account)
+        self._accounts.append(troublemaker_1_account)
+        self._accounts.append(rebel_1_account)
 
     @staticmethod
     def _get_valid_account_menu_selection():

@@ -90,8 +90,8 @@ class Account(ABC):
 
     def record_transaction(self):
         budget_category = self.__validate_category()
-        dollar_amount = self.__validate_dollar_amount()
-        shop_website = self.__validate_website()
+        dollar_amount   = self.__validate_dollar_amount()
+        shop_website    = self.__validate_website()
         self.__update_account(budget_category, dollar_amount)
         self._transactions.append(Transaction(dollar_amount, budget_category, shop_website))
         self.handle_notification(budget_category)
@@ -101,6 +101,9 @@ class Account(ABC):
 
     def view_budgets(self):
         print(self.get_budget().get_budget_detail())
+
+    def get_budget_list(self):
+        return self._budgets.BUDGET_TYPE
 
     def get_budget(self):
         return self._budgets
@@ -172,6 +175,20 @@ class Account(ABC):
             self._budgets.set_budget_status(index, True)
             print("Current category has reached its limit, locked.")
 
+    def get_detail(self):
+        return (
+            "===========================================\n"
+            "||           Account Information         ||\n"
+            "===========================================\n"
+            f"  User Name:           {self._user.name}\n"
+            f"  Age:                 {self._user.age}\n"
+            f"  Bank Account Number: {self._bank.account_number}\n"
+            f"  Bank Name:           {self._bank.name}\n"
+            f"  Bank Balance:        ${self._bank.balance:,.2f}\n"
+            f"  User Type:           {self.user_type}\n"
+            f"  Account Lock Status: {'Locked' if self._locked_status else 'Unlocked'}\n"
+            "===========================================\n"
+        )
 
     def __str__(self):
         return f"User Name: {self._user.name}, Age: {self._user.age}, " \
