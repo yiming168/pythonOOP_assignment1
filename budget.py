@@ -36,6 +36,23 @@ class Budget:
         for i, category in enumerate(Budget.BUDGET_TYPE):
             print(f"  {i + 1}: {category}")  # Display index and category name
 
+    @staticmethod
+    def get_valid_budget_category_selection():
+        while True:
+            print("\nSelect a budget category:")
+            for i, budget_category in enumerate(Budget.BUDGET_TYPE):
+                print(f"{i + 1}. {budget_category}")
+
+            selection = input("Enter your budget category selection: ")
+            try:
+                selection = int(selection)
+                if 1 <= selection <= len(Budget.BUDGET_TYPE):
+                    return selection
+                else:
+                    print("Invalid selection. Please choose a valid number.")
+            except ValueError:
+                print("Invalid input. Please enter a number.")
+
     def get_budget_list(self):
         return self._budget_list
 
@@ -66,12 +83,6 @@ class Budget:
     def set_budget_status(self, index, status):
         self._validate_index(index)
         self._budget_list[index][Budget.STATUS] = status
-
-    def deduct_spent(self, index, amount):
-        self._validate_index(index)
-        if amount <= 0:
-            raise ValueError("Amount to deduct must be positive.")
-        self._budget_list[index][Budget.SPENT] += amount
 
     def get_locked_categories_num(self):
         result = 0

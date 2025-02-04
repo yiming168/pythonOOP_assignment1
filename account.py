@@ -6,8 +6,6 @@ from abc import ABC, abstractmethod
 
 
 class Account(ABC):
-    # Class variable to hold the list of all account instances
-    account_list = []
 
     def __init__(self, user_name, age,
                 bank_name, account_num, balance,
@@ -18,8 +16,6 @@ class Account(ABC):
         self._transactions  = []
         self._locked_status = False
 
-        # Add this account to the backend class-level account list
-        Account.account_list.append(self)
 
     @staticmethod
     def __validate_budgets(origin_budgets: Budget, bank: Bank) -> Budget:
@@ -55,7 +51,6 @@ class Account(ABC):
             # Create a new Budget instance with valid budgets
             origin_budgets = Budget(*new_budgets)
 
-
     @property
     @abstractmethod
     def user_type(self):
@@ -81,6 +76,14 @@ class Account(ABC):
         pass
 
     @property
+    def user_name(self):
+        return self._user.name
+
+    @property
+    def locked_status(self):
+        return self._locked_status
+
+    @property
     def transactions(self):
         return self._transactions
 
@@ -94,21 +97,10 @@ class Account(ABC):
         self.handle_notification(budget_category)
         if self._budgets.get_locked_categories_num() >= self.locked_out_category_num:
             self._locked_status = True
+        print("Transactions recorded")
 
     def view_budgets(self):
         print(self.get_budget().get_budget_detail())
-
-    def get_user(self):
-        return self._user
-
-    def get_bank(self):
-        return self._bank
-
-    def get_balance(self):
-        return self._bank.balance
-
-    def get_transactions(self):
-        return self._transactions
 
     def get_budget(self):
         return self._budgets
@@ -116,8 +108,16 @@ class Account(ABC):
     def get_transaction(self):
         return self._transactions
 
-    def get_locked_status(self):
-        return self._locked_status
+    def view_transaction_by_budget(self, selection):
+        budget_category_name = Budget.get_budget_name(selection -1)
+
+        print(f"\nTransactions for {budget_category_name} category:")
+        if not self.transactions[selection - 1]:
+            print(f"No transaction recorded under the budget category {budget_category_name}.")
+            return
+        for transaction in self._transactions:
+            if transaction.get_budget_category() == selection - 1:
+                print(transaction)
 
     def __validate_category(self):
         """Ensure the budget category index is valid."""

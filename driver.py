@@ -1,5 +1,5 @@
-from account import Account
 from account_types import AccountAngel, AccountTroublemaker, AccountRebel
+from fam_menu import FamMenu
 from transaction import Transaction
 
 
@@ -30,36 +30,16 @@ def load_test_users():
     rebel_1_account.transactions.append(Transaction(50, 1, "Boston Pizza"))
 
     # Add all accounts to the account list
-    Account.account_list.extend([angel_1_account, troublemaker_1_account, rebel_1_account])
+    FamMenu.ACCOUNT_LIST.append(angel_1_account)
+    FamMenu.ACCOUNT_LIST.append(troublemaker_1_account)
+    FamMenu.ACCOUNT_LIST.append(rebel_1_account)
 
 def main():
     load_test_users()
-    print(Account.account_list[1])
-    print(Account.account_list[0])
-    print(Account.account_list[2])
 
-    # while True:
-    #     print("Welcome to FAM! Select from the options below:")
-    #     print("1. Register a new user")
-    #     print("2. Login to an existing user")
-    #     print("3. Exit")
-    #     selection = input("Choose an option: ")
-    #     try:
-    #         selection = int(selection)
-    #         if selection == 1:
-    #             register_new_user()
-    #         elif selection == 2:
-    #             login_existing_user()
-    #         elif selection == 3:
-    #             print("Exiting FAM. Thank you for using FAM. Goodbye!")
-    #             break
-    #         else:
-    #             print("Invalid selection. Please choose a valid option.\n")
-    #             continue
-    #     except ValueError:
-    #         print("Invalid input. Please enter a number.\n")
-    #         continue
+    fam_menu = FamMenu()
 
+    fam_menu.display_fam_menu()
 
 if __name__ == '__main__':
     main()
