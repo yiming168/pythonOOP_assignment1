@@ -9,7 +9,7 @@ class User:
         while True:
             if isinstance(name, str) and name.strip():
                 return name.strip()
-            name = input("Invalid name. Please enter a non-empty name: ")
+            name = input("Please enter a non-empty name: ")
 
     @staticmethod
     def __validate_age(age):
@@ -17,11 +17,11 @@ class User:
         while True:
             try:
                 age = int(age)
-                if age >= 0:
+                if age > 0:
                     return age
             except ValueError:
                 pass  # Ignore invalid conversion errors
-            age = input("Invalid age. Please enter a non-negative integer: ")
+            age = input("Please enter a positive integer for age: ")
 
     @property
     def name(self):

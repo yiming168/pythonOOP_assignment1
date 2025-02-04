@@ -10,7 +10,7 @@ class Bank:
         while True:
             if isinstance(account_number, str) and account_number.strip():
                 return account_number.strip()
-            account_number = input("Invalid account number. Please enter a non-empty string: ")
+            account_number = input("Please enter a non-empty string for account number: ")
 
     @staticmethod
     def __validate_bank_name(name):
@@ -18,7 +18,7 @@ class Bank:
         while True:
             if isinstance(name, str) and name.strip():
                 return name.strip()
-            name = input("Invalid bank name. Please enter a non-empty string: ")
+            name = input("Please enter a non-empty string for bank name: ")
 
     @staticmethod
     def __validate_balance(balance):
@@ -26,11 +26,11 @@ class Bank:
         while True:
             try:
                 balance = float(balance)
-                if balance >= 0:
+                if balance > 0:
                     return balance
             except ValueError:
                 pass  # Ignore conversion errors
-            balance = input("Invalid balance. Please enter a non-negative number: ")
+            balance = input("Please enter a positive number for $balance: ")
 
     @property
     def account_number(self):

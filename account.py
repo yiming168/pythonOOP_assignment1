@@ -26,7 +26,7 @@ class Account(ABC):
 
             # Check for negative budgets
             if any(b[Budget.LIMIT] < 0 for b in origin_budgets.get_budget_list()):
-                print("Error: Individual budgets cannot be negative.")
+                pass
             # Check if total budget exceeds balance
             elif total_budget > bank.balance:
                 print(f"Error: Total budget (${total_budget:.2f}) cannot exceed bank balance (${bank.balance:.2f}).")
@@ -34,7 +34,7 @@ class Account(ABC):
                 return origin_budgets # Valid budgets
 
             # Prompt user to re-enter valid budgets
-            print("Please re-enter budgets for each category:")
+            print("Please enter valid budgets for each category:")
             new_budgets = []
             for category in Budget.BUDGET_TYPE:
                 while True:
@@ -146,7 +146,7 @@ class Account(ABC):
                     return amount
             except ValueError:
                 print("Invalid input. Please enter a valid amount.")
-            dollar_amount = input("Enter dollar amount: ")
+            dollar_amount = input("Invalid input. Enter a correct dollar amount: ")
 
     @staticmethod
     def __validate_website():
